@@ -22,6 +22,7 @@ public class Broker {
             Future<Void> result = socket.connect(new InetSocketAddress("127.0.0.1", port));
             result.get();
 
+            Logger.log("Connected to server");
             String str = "This is a message from broker";
             socket.write(ByteBuffer.wrap(str.getBytes()), str, new CompletionHandler<Integer, String>() {
                 @Override

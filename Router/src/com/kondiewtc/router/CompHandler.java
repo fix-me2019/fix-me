@@ -24,20 +24,20 @@ public class CompHandler implements CompletionHandler<AsynchronousSocketChannel,
                 client.write(ByteBuffer.wrap(str.getBytes()), attachment, new CompletionHandler<Integer, Attachment>() {
                     @Override
                     public void completed(Integer result, Attachment attachment) {
-                        if (attachment.getPost() == 5000) {
-                            Logger.log("Response sent back to broker");
-                        } else {
-                            Logger.log("Response sent back to market");
-                        }
+//                        if (attachment.getPost() == 5000) {
+//                            Logger.log("Response sent back to broker");
+//                        } else {
+//                            Logger.log("Response sent back to market");
+//                        }
                     }
 
                     @Override
                     public void failed(Throwable exc, Attachment attachment) {
-                        if (attachment.getPost() == 5000) {
-                            Logger.log("Failed to send back response to broker");
-                        } else {
-                            Logger.log("Failed to send back response to market");
-                        }
+//                        if (attachment.getPost() == 5000) {
+//                            Logger.log("Failed to send back response to broker");
+//                        } else {
+//                            Logger.log("Failed to send back response to market");
+//                        }
                     }
                 });
                 new IOHandler(attachment);

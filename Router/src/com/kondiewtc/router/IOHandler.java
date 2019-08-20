@@ -7,12 +7,13 @@ import java.nio.channels.CompletionHandler;
 public class IOHandler {
 
     private AsynchronousSocketChannel socket;
-    private int port;
+    private int port, id;
 
     public IOHandler(Attachment attachment)
     {
         this.socket = attachment.getClient();
         this.port = attachment.getPost();
+        this.id = attachment.getId();
         handleInput();
     }
 
@@ -24,15 +25,16 @@ public class IOHandler {
             public void completed(Integer result, ByteBuffer attachment) {
                 if (port == 5000) {
                     Router.setBrokerMsg(new String(attachment.array()).trim());
+                    Logger.log("[Broker]: ID=" + id + "|MSG=" + new String(attachment.array()).trim() + "|CKSUM=" + CheckSum.generateChecksum(new String(attachment.array()).trim()));
                 }else{
                     Router.setMarketMsg(new String(attachment.array()).trim());
+                    Logger.log("[Market]: ID=" + id + "|MSG=" + new String(attachment.array()).trim() + "|CKSUM=" + CheckSum.generateChecksum(new String(attachment.array()).trim()));
                 }
-                Logger.log("Client: " + new String(attachment.array()).trim());
             }
 
             @Override
             public void failed(Throwable exc, ByteBuffer attachment) {
-                Logger.log("Fail__");
+                Logger.log("Failed to read");
             }
         });
         handleOutput();
@@ -50,13 +52,14 @@ public class IOHandler {
         socket.write(ByteBuffer.wrap(str.getBytes()), str, new CompletionHandler<Integer, String>() {
             @Override
             public void completed(Integer result, String attachment) {
-
-                Logger.log("Server: " + attachment);
+//                if (str != "") {
+//                    Logger.log("Server: " + attachment);
+//                }
             }
 
             @Override
             public void failed(Throwable exc, String attachment) {
-                Logger.log("FFFFF");
+                Logger.log("Failed to write");
             }
         });
     }
