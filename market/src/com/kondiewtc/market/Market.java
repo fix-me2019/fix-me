@@ -22,6 +22,7 @@ public class Market {
             result.get();
 
             String str = "This is a message from market";
+            str += ":" + CheckSum.generateChecksum(str);
             socket.write(ByteBuffer.wrap(str.getBytes()), str, new CompletionHandler<Integer, String>() {
                 @Override
                 public void completed(Integer result, String attachment) {

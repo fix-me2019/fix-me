@@ -23,12 +23,13 @@ public class IOHandler {
         socket.read(buffer, buffer, new CompletionHandler<Integer, ByteBuffer>() {
             @Override
             public void completed(Integer result, ByteBuffer attachment) {
+                String msg = new String(attachment.array()).trim();
                 if (port == 5000) {
-                    Router.setBrokerMsg(new String(attachment.array()).trim());
-                    Logger.log("[Broker]: ID=" + id + "|MSG=" + new String(attachment.array()).trim() + "|CKSUM=" + CheckSum.generateChecksum(new String(attachment.array()).trim()));
+                    Router.setBrokerMsg(msg);
+                    Logger.log("[Broker]: ID=" + id + "|MSG=" + msg.split(":")[0] + "|CKSUM=" + msg.split(":")[1]);
                 }else{
-                    Router.setMarketMsg(new String(attachment.array()).trim());
-                    Logger.log("[Market]: ID=" + id + "|MSG=" + new String(attachment.array()).trim() + "|CKSUM=" + CheckSum.generateChecksum(new String(attachment.array()).trim()));
+                    Router.setMarketMsg(msg);
+                    Logger.log("[Market]: ID=" + id + "|MSG=" + msg.split(":")[0] + "|CKSUM=" + msg.split(":")[1]);
                 }
             }
 
@@ -37,7 +38,19 @@ public class IOHandler {
                 Logger.log("Failed to read");
             }
         });
-        handleOutput();
+        String msg;
+        if (port == 5000){
+            msg = Router.getBrokerMsg();
+        }else{
+            msg = Router.getMarketMsg();
+        }
+        if (msg.split(":").length == 2) {
+            if (CheckSum.isIntact(msg.split(":")[0], Integer.valueOf(msg.split(":")[1]))) {
+                handleOutput();
+            } else {
+                Logger.log("This sent message was not intact");
+            }
+        }
         buffer.clear();
     }
 

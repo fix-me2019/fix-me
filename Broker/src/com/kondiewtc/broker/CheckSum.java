@@ -1,4 +1,4 @@
-package com.kondiewtc.router;
+package com.kondiewtc.broker;
 
 public class CheckSum {
 
