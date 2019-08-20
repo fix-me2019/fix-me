@@ -30,7 +30,7 @@ public class Market {
 
                 @Override
                 public void failed(Throwable exc, String attachment) {
-                    Logger.log("Fail...");
+                    Logger.log("Failed to write");
                 }
             });
 
@@ -43,7 +43,7 @@ public class Market {
 
                 @Override
                 public void failed(Throwable exc, ByteBuffer attachment) {
-                    Logger.log("Fail...");
+                    Logger.log("Failed to read");
                 }
             });
             buffer.clear();
