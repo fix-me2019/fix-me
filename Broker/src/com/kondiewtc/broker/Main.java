@@ -2,6 +2,8 @@ package com.kondiewtc.broker;
 
 public class Main {
 
+    public static int id = 0;
+
     public static void main(String[] args)
     {
         if (args.length >= 3) {

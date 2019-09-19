@@ -15,14 +15,16 @@ public class CompHandler implements CompletionHandler<AsynchronousSocketChannel,
             if (client != null && client.isOpen()) {
                 attachment.getServer().accept(attachment, this);
                 attachment.setClient(client);
+                String str = "";
+                attachment.setId(id++);
                 if (attachment.getPost() == 5000){
                     Router.setBroker(client);
+                    str = "Connected to router. ID: " + attachment.getId();
                 }
                 else{
                     Router.setMarket(client);
+                    str = "Connected to router. ID: " + attachment.getId() + "~";
                 }
-                attachment.setId(id++);
-                String str = "Connected to router. ID: " + attachment.getId() + "~";
 
                 SocketAddress sa = client.getRemoteAddress();
                 Logger.log("Accepted a connection from " + sa.toString());

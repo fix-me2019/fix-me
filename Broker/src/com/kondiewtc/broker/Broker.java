@@ -30,7 +30,7 @@ public class Broker {
             socket.write(ByteBuffer.wrap(str.getBytes()), str, new CompletionHandler<Integer, String>() {
                 @Override
                 public void completed(Integer result, String attachment) {
-                    Logger.log("Client: " + attachment);
+                    Logger.log("Broker: " + attachment.split(":")[0]);
                 }
 
                 @Override
@@ -59,8 +59,16 @@ public class Broker {
                 socket.read(buffer, buffer, new CompletionHandler<Integer, ByteBuffer>() {
                     @Override
                     public void completed(Integer result, ByteBuffer attachment) {
-                        Logger.log("Server: " + new String(attachment.array()).trim());
-                        handleRead(socket);
+                        String str = new String(attachment.array()).trim();
+                        if (Main.id == 0) {
+                            Main.id = Integer.valueOf(str.split(": ")[1]);
+                            Logger.log("Server: " + str);
+                            handleRead(socket);
+                        }else{
+                            Main.id = 0;
+                            Logger.log("Market: " + str.split(":")[0]);
+                            System.exit(0);
+                        }
                     }
 
                     @Override
@@ -70,7 +78,7 @@ public class Broker {
                     }
                 });
             }
-        }, 2000);
+        }, 1000);
         buffer.clear();
     }
 }

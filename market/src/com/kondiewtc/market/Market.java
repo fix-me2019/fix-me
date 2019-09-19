@@ -27,7 +27,7 @@ public class Market {
                 @Override
                 public void completed(Integer result, ByteBuffer attachment) {
                     String query = new String(attachment.array()).trim();
-                    Logger.log("Server: " + query);
+                    Logger.log("Server: " + query.split("~")[0]);
                     Logger.log("Broker: " + query.split("~")[1].split(":")[0]);
 
                     String str = getReply(query);
@@ -35,7 +35,7 @@ public class Market {
                     socket.write(ByteBuffer.wrap(str.getBytes()), str, new CompletionHandler<Integer, String>() {
                         @Override
                         public void completed(Integer result, String attachment) {
-                            Logger.log("Market: " + attachment);
+                            Logger.log("Market: " + attachment.split(":")[0]);
                             System.exit(0);
                         }
 

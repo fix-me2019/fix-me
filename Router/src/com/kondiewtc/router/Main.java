@@ -9,6 +9,8 @@ import java.util.concurrent.Executors;
 
 public class Main {
 
+    public static DbConn conn;
+
     public static void main(String[] args)
     {
         Router router1 = new Router(5000);
@@ -19,7 +21,7 @@ public class Main {
         Executor executor2 = new RouterExec();
         executor2.execute(router2);
 
-        DbConn conn = new DbConn();
+        conn = new DbConn();
         conn.clearAll();
         insertIntoDb(conn);
         showItems(conn);
@@ -39,7 +41,7 @@ public class Main {
         conn.addItem("something", 260, 10, 4);
     }
 
-    private static void showItems(DbConn conn){
+    public static void showItems(DbConn conn){
 
         try {
             ResultSet results = conn.getItems();

@@ -98,6 +98,9 @@ public class IOHandler {
                         if (port == 5001 && Router.getBroker() != null && isReady){
                             handleOutput(Router.getBroker(), false);
                         }
+                        else if (!isReady){
+                            Main.showItems(Main.conn);
+                        }
                     }
 
                     @Override
