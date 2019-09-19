@@ -27,12 +27,12 @@ public class DbConn {
 
         try {
             // DriverManager: The basic service for managing a set of JDBC drivers.
-            conn = DriverManager.getConnection("jdbc:sqlite:swingy.db");
+            conn = DriverManager.getConnection("jdbc:sqlite:fix_me.db");
         } catch (SQLException e) {
             return;
         }
 
-        String query = "CREATE TABLE MarketItems (name VARCHAR(50), quantity INT, price INT, id INT, max INT AUTO_INCREMENT NOT NULL PRIMARY KEY)";
+        String query = "CREATE TABLE MarketItems (name VARCHAR(50), quantity INT, price INT, id INT AUTO_INCREMENT NOT NULL PRIMARY KEY)";
         try {
             stat = conn.prepareStatement(query);
             stat.executeUpdate();

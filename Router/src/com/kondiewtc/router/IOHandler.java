@@ -3,6 +3,7 @@ package com.kondiewtc.router;
 import java.nio.ByteBuffer;
 import java.nio.channels.AsynchronousSocketChannel;
 import java.nio.channels.CompletionHandler;
+import java.sql.ResultSet;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -34,10 +35,22 @@ public class IOHandler {
                 String msg = new String(attachment.array()).trim();
                 if (port == 5000) {
                     Router.setBrokerMsg(msg);
-                    Logger.log("[Broker]: ID=" + id + "|MSG=" + msg.split(":")[0] + "|CKSUM=" + msg.split(":")[1]);
+                    int price = 0;
+                    try {
+                        ResultSet rs = Main.conn.getItem(Integer.valueOf(msg.split(":")[0].split(" ")[1]));
+                        if (rs.next()) {
+                            price = rs.getInt("price");
+                            Logger.log("[Broker]: ID=" + id + "|MARKET: WTC" + "|INSTRUCTION=" + msg.split(":")[0].split(" ")[0] + "|PRICE=" + price + "|ITEM_ID=" + msg.split(":")[0].split(" ")[1] + "|QUANTITY=" + msg.split(":")[0].split(" ")[2] + "|CKSUM=" + msg.split(":")[1]);
+                        }
+                        else{
+                            Logger.log("[Broker]: ID=" + id + "|MARKET: WTC" + "|INSTRUCTION=" + msg.split(":")[0].split(" ")[0] + "|PRICE=" + price + "|ITEM_ID=" + msg.split(":")[0].split(" ")[1] + "|QUANTITY=" + msg.split(":")[0].split(" ")[2] + "|CKSUM=" + msg.split(":")[1]);
+                        }
+                    }catch (Exception e){
+                        Logger.log(e.toString());
+                    }
                 }else{
                     Router.setMarketMsg(msg);
-                    Logger.log("[Market]: ID=" + id + "|MSG=" + msg.split(":")[0] + "|CKSUM=" + msg.split(":")[1]);
+                    Logger.log("[Market]: ID=" + id + "|MARKET: WTC" + "|MSG=" + msg.split(":")[0] + "|CKSUM=" + msg.split(":")[1]);
                 }
             }
 
@@ -78,7 +91,7 @@ public class IOHandler {
         }else{
             if (!isReady) {
                 handleInput(Router.getMarket());
-                timerTime = 3000;
+                timerTime = 6000;
             }
             else {
                 str[0] = Router.getBrokerMsg();

@@ -27,25 +27,29 @@ public class Market {
                 @Override
                 public void completed(Integer result, ByteBuffer attachment) {
                     String query = new String(attachment.array()).trim();
-                    Logger.log("Server: " + query.split("~")[0]);
-                    Logger.log("Broker: " + query.split("~")[1].split(":")[0]);
+                    if (query.split("~").length >= 2) {
+                        Logger.log("Server: " + query.split("~")[0]);
+                        Logger.log("Broker: " + query.split("~")[1].split(":")[0]);
 
-                    String str = getReply(query);
-                    str += ":" + CheckSum.generateChecksum(str);
-                    socket.write(ByteBuffer.wrap(str.getBytes()), str, new CompletionHandler<Integer, String>() {
-                        @Override
-                        public void completed(Integer result, String attachment) {
-                            Logger.log("Market: " + attachment.split(":")[0]);
-                            System.exit(0);
-                        }
+                        String str = getReply(query);
+                        str += ":" + CheckSum.generateChecksum(str);
+                        socket.write(ByteBuffer.wrap(str.getBytes()), str, new CompletionHandler<Integer, String>() {
+                            @Override
+                            public void completed(Integer result, String attachment) {
+                                Logger.log("Market: " + attachment.split(":")[0]);
+                                System.exit(0);
+                            }
 
-                        @Override
-                        public void failed(Throwable exc, String attachment) {
-                            Logger.log("Failed to write");
-                        }
-                    });
-
-
+                            @Override
+                            public void failed(Throwable exc, String attachment) {
+                                Logger.log("Failed to write");
+                            }
+                        });
+                    }
+                    else{
+                        Logger.log("Error");
+                        System.exit(0);
+                    }
                 }
 
                 @Override
@@ -74,19 +78,19 @@ public class Market {
             if (rs.next()) {
                 if (queryType.equalsIgnoreCase("buy") && (rs.getInt("quantity") - quantity) > 0) {
                     Main.conn.updateItem(rs.getInt("quantity") - quantity, id);
-                    return "Request accepted";
+                    return "Executed. Request accepted";
                 } else if (queryType.equalsIgnoreCase("sell")) {
                     Main.conn.updateItem(rs.getInt("quantity") + quantity, id);
-                    return "Request accepted";
+                    return "Executed. Request accepted";
                 } else {
-                    return "Request denied";
+                    return "Rejected. Request denied";
                 }
             }
             else{
-                return "Request denied, make use the selected id exists";
+                return "Rejected. Request denied, make use the selected id exists";
             }
         }catch (Exception e){
-            return "Request denied because of some error";
+            return "Rejected. Request denied because of some error";
         }
     }
 }
