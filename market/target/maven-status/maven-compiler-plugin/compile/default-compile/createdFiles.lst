@@ -2,6 +2,6 @@ com/kondiewtc/market/Market.class
 com/kondiewtc/market/Main.class
 com/kondiewtc/market/Logger.class
 com/kondiewtc/market/Market$1.class
-com/kondiewtc/market/Market$2.class
 com/kondiewtc/market/db/DbConn.class
+com/kondiewtc/market/Market$1$1.class
 com/kondiewtc/market/CheckSum.class

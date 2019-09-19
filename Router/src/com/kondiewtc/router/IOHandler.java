@@ -3,6 +3,8 @@ package com.kondiewtc.router;
 import java.nio.ByteBuffer;
 import java.nio.channels.AsynchronousSocketChannel;
 import java.nio.channels.CompletionHandler;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class IOHandler {
 
@@ -19,7 +21,7 @@ public class IOHandler {
             handleInput(attachment.getClient());
         }
         else{
-            handleOutput(attachment.getClient());
+            handleOutput(attachment.getClient(), true);
         }
     }
 
@@ -67,32 +69,43 @@ public class IOHandler {
         buffer.clear();
     }
 
-    private void handleOutput(AsynchronousSocketChannel socket)
+    private void handleOutput(AsynchronousSocketChannel socket, boolean isReady)
     {
-        String str;
+        final String[] str = new String[1];
+        int timerTime = 0;
         if (port == 5000) {
-            str = Router.getMarketMsg();
+            str[0] = Router.getMarketMsg();
         }else{
-            str = Router.getBrokerMsg();
+            if (!isReady) {
+                handleInput(Router.getMarket());
+                timerTime = 3000;
+            }
+            else {
+                str[0] = Router.getBrokerMsg();
+            }
         }
+        Timer timer = new Timer();
 
-        Logger.log("=-=-=-=-=-=-===-=-=");
-        socket.write(ByteBuffer.wrap(str.getBytes()), str, new CompletionHandler<Integer, String>() {
+        timer.schedule(new TimerTask() {
             @Override
-            public void completed(Integer result, String attachment) {
-//                if (str != "") {
-                    Logger.log("Server: " + socket);
-                    if (port == 5001 && Router.getBroker() != null){
-                        handleOutput(Router.getBroker());
-                        Router.setBroker(null);
+            public void run() {
+                if (!isReady) {
+                    str[0] = Router.getMarketMsg();
+                }
+                socket.write(ByteBuffer.wrap(str[0].getBytes()), str[0], new CompletionHandler<Integer, String>() {
+                    @Override
+                    public void completed(Integer result, String attachment) {
+                        if (port == 5001 && Router.getBroker() != null && isReady){
+                            handleOutput(Router.getBroker(), false);
+                        }
                     }
-//                }
-            }
 
-            @Override
-            public void failed(Throwable exc, String attachment) {
-                Logger.log("Failed to write");
+                    @Override
+                    public void failed(Throwable exc, String attachment) {
+                        Logger.log("Failed to write");
+                    }
+                });
             }
-        });
+        }, timerTime);
     }
 }

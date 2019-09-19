@@ -4,6 +4,7 @@ import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
 import java.nio.channels.AsynchronousSocketChannel;
 import java.nio.channels.CompletionHandler;
+import java.sql.ResultSet;
 import java.util.concurrent.Future;
 
 public class Market {
@@ -25,7 +26,26 @@ public class Market {
             socket.read(buffer, buffer, new CompletionHandler<Integer, ByteBuffer>() {
                 @Override
                 public void completed(Integer result, ByteBuffer attachment) {
-                    Logger.log("Server: " + new String(attachment.array()).trim());
+                    String query = new String(attachment.array()).trim();
+                    Logger.log("Server: " + query);
+                    Logger.log("Broker: " + query.split("~")[1].split(":")[0]);
+
+                    String str = getReply(query);
+                    str += ":" + CheckSum.generateChecksum(str);
+                    socket.write(ByteBuffer.wrap(str.getBytes()), str, new CompletionHandler<Integer, String>() {
+                        @Override
+                        public void completed(Integer result, String attachment) {
+                            Logger.log("Market: " + attachment);
+                            System.exit(0);
+                        }
+
+                        @Override
+                        public void failed(Throwable exc, String attachment) {
+                            Logger.log("Failed to write");
+                        }
+                    });
+
+
                 }
 
                 @Override
@@ -35,27 +55,38 @@ public class Market {
             });
             buffer.clear();
 
-
-            String str = "This is a message from market";
-            str += ":" + CheckSum.generateChecksum(str);
-            socket.write(ByteBuffer.wrap(str.getBytes()), str, new CompletionHandler<Integer, String>() {
-                @Override
-                public void completed(Integer result, String attachment) {
-                    Logger.log("Client: " + attachment);
-                }
-
-                @Override
-                public void failed(Throwable exc, String attachment) {
-                    Logger.log("Failed to write");
-                }
-            });
-
-
             Thread.currentThread().join();
         }
         catch (Exception e)
         {
             e.printStackTrace();
+        }
+    }
+
+    private String getReply(String query){
+
+        int id = Integer.valueOf(query.split("~")[1].split(":")[0].split(" ")[1]);
+        int quantity = Integer.valueOf(query.split("~")[1].split(":")[0].split(" ")[2]);
+        String queryType = query.split("~")[1].split(":")[0].split(" ")[0];
+
+        try {
+            ResultSet rs = Main.conn.getItem(id);
+            if (rs.next()) {
+                if (queryType.equalsIgnoreCase("buy") && (rs.getInt("quantity") - quantity) > 0) {
+                    Main.conn.updateItem(rs.getInt("quantity") - quantity, id);
+                    return "Request accepted";
+                } else if (queryType.equalsIgnoreCase("sell")) {
+                    Main.conn.updateItem(rs.getInt("quantity") + quantity, id);
+                    return "Request accepted";
+                } else {
+                    return "Request denied";
+                }
+            }
+            else{
+                return "Request denied, make use the selected id exists";
+            }
+        }catch (Exception e){
+            return "Request denied because of some error";
         }
     }
 }

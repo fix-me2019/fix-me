@@ -103,6 +103,24 @@ public class DbConn {
         return rs;
     }
 
+    public ResultSet getItem(int id) {
+
+        try {
+            String getQueryStatement = "SELECT * FROM MarketItems WHERE id = ?";
+
+            stat = conn.prepareStatement(getQueryStatement);
+            stat.setInt(1, id);
+
+            rs = stat.executeQuery();
+
+
+        } catch (SQLException e) {
+//            log("getting : " + e.toString());
+        }
+
+        return rs;
+    }
+
     public void clearAll()
     {
         try {

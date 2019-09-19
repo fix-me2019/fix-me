@@ -22,7 +22,7 @@ public class CompHandler implements CompletionHandler<AsynchronousSocketChannel,
                     Router.setMarket(client);
                 }
                 attachment.setId(id++);
-                String str = "Connected to router. ID: " + attachment.getId();
+                String str = "Connected to router. ID: " + attachment.getId() + "~";
 
                 SocketAddress sa = client.getRemoteAddress();
                 Logger.log("Accepted a connection from " + sa.toString());
