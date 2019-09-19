@@ -6,18 +6,24 @@ import java.nio.channels.CompletionHandler;
 
 public class IOHandler {
 
-    private AsynchronousSocketChannel socket;
+    private Attachment attachment;
     private int port, id;
 
     public IOHandler(Attachment attachment)
     {
-        this.socket = attachment.getClient();
         this.port = attachment.getPost();
         this.id = attachment.getId();
-        handleInput();
+        this.attachment = attachment;
+
+        if (port == 5000){
+            handleInput(attachment.getClient());
+        }
+        else{
+            handleOutput(attachment.getClient());
+        }
     }
 
-    private void handleInput()
+    private void handleInput(AsynchronousSocketChannel socket)
     {
         ByteBuffer buffer = ByteBuffer.allocate(1024);
         socket.read(buffer, buffer, new CompletionHandler<Integer, ByteBuffer>() {
@@ -38,23 +44,30 @@ public class IOHandler {
                 Logger.log("Failed to read");
             }
         });
-        String msg;
-        if (port == 5000){
-            msg = Router.getBrokerMsg();
-        }else{
-            msg = Router.getMarketMsg();
-        }
-        if (msg.split(":").length == 2) {
-            if (CheckSum.isIntact(msg.split(":")[0], Integer.valueOf(msg.split(":")[1]))) {
-                handleOutput();
-            } else {
-                Logger.log("This sent message was not intact");
-            }
-        }
+//        String msg;
+//        if (port == 5000){
+//            msg = Router.getBrokerMsg();
+//        }else{
+//            msg = Router.getMarketMsg();
+//        }
+//        if (msg.split(":").length == 2) {
+//            if (CheckSum.isIntact(msg.split(":")[0], Integer.valueOf(msg.split(":")[1]))) {
+//                if (attachment.getPost() == 5000 && Router.getMarket() != null) {
+//                    handleOutput(Router.getMarket());
+//                }else if (Router.getBroker() != null){
+//                    handleOutput(Router.getBroker());
+//                }
+//            } else {
+//                Logger.log("This sent message was not intact");
+//            }
+//        }
+//        else{
+//            Logger.log(msg + "====" + msg.split(":").length + "__" + port);
+//        }
         buffer.clear();
     }
 
-    private void handleOutput()
+    private void handleOutput(AsynchronousSocketChannel socket)
     {
         String str;
         if (port == 5000) {
@@ -62,11 +75,17 @@ public class IOHandler {
         }else{
             str = Router.getBrokerMsg();
         }
+
+        Logger.log("=-=-=-=-=-=-===-=-=");
         socket.write(ByteBuffer.wrap(str.getBytes()), str, new CompletionHandler<Integer, String>() {
             @Override
             public void completed(Integer result, String attachment) {
 //                if (str != "") {
-//                    Logger.log("Server: " + attachment);
+                    Logger.log("Server: " + socket);
+                    if (port == 5001 && Router.getBroker() != null){
+                        handleOutput(Router.getBroker());
+                        Router.setBroker(null);
+                    }
 //                }
             }
 

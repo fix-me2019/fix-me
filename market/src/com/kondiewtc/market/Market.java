@@ -21,6 +21,21 @@ public class Market {
             Future<Void> result = socket.connect(new InetSocketAddress("127.0.0.1", port));
             result.get();
 
+            ByteBuffer buffer = ByteBuffer.allocate(1024);
+            socket.read(buffer, buffer, new CompletionHandler<Integer, ByteBuffer>() {
+                @Override
+                public void completed(Integer result, ByteBuffer attachment) {
+                    Logger.log("Server: " + new String(attachment.array()).trim());
+                }
+
+                @Override
+                public void failed(Throwable exc, ByteBuffer attachment) {
+                    Logger.log("Failed to read");
+                }
+            });
+            buffer.clear();
+
+
             String str = "This is a message from market";
             str += ":" + CheckSum.generateChecksum(str);
             socket.write(ByteBuffer.wrap(str.getBytes()), str, new CompletionHandler<Integer, String>() {
@@ -35,19 +50,8 @@ public class Market {
                 }
             });
 
-            ByteBuffer buffer = ByteBuffer.allocate(1024);
-            socket.read(buffer, buffer, new CompletionHandler<Integer, ByteBuffer>() {
-                @Override
-                public void completed(Integer result, ByteBuffer attachment) {
-                    Logger.log("Server: " + new String(attachment.array()).trim());
-                }
 
-                @Override
-                public void failed(Throwable exc, ByteBuffer attachment) {
-                    Logger.log("Failed to read");
-                }
-            });
-            buffer.clear();
+            Thread.currentThread().join();
         }
         catch (Exception e)
         {

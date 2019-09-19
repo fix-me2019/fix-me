@@ -3,12 +3,16 @@ package com.kondiewtc.router;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.nio.channels.AsynchronousServerSocketChannel;
+import java.nio.channels.AsynchronousSocketChannel;
 
 public class Router implements Runnable {
 
     private int port;
     private static String brokerMsg = "";
     private static String marketMsg = "";
+    private static AsynchronousSocketChannel broker;
+    private static AsynchronousSocketChannel market;
+    private AsynchronousSocketChannel brokerClient = null, marketClient = null;
 
     public Router(int port)
     {
@@ -29,6 +33,38 @@ public class Router implements Runnable {
 
     public static String getBrokerMsg() {
         return brokerMsg;
+    }
+
+    public void setMarketClient(AsynchronousSocketChannel marketClient) {
+        this.marketClient = marketClient;
+    }
+
+    public void setBrokerClient(AsynchronousSocketChannel brokerClient) {
+        this.brokerClient = brokerClient;
+    }
+
+    public AsynchronousSocketChannel getMarketClient() {
+        return marketClient;
+    }
+
+    public AsynchronousSocketChannel getBrokerClient() {
+        return brokerClient;
+    }
+
+    public static AsynchronousSocketChannel getBroker() {
+        return broker;
+    }
+
+    public static AsynchronousSocketChannel getMarket() {
+        return market;
+    }
+
+    public static void setBroker(AsynchronousSocketChannel broker) {
+        Router.broker = broker;
+    }
+
+    public static void setMarket(AsynchronousSocketChannel market) {
+        Router.market = market;
     }
 
     @Override
