@@ -33,7 +33,7 @@ public class IOHandler {
             @Override
             public void completed(Integer result, ByteBuffer attachment) {
                 String msg = new String(attachment.array()).trim();
-                if (msg.split(":").length == 2 && CheckSum.isIntact(msg.split(":")[0], Integer.valueOf(msg.split(":")[1]))) {
+                if (msg.split(":").length == 2 && CheckSum.isIntact(msg.split(":")[0], String.valueOf(msg.split(":")[1]))) {
                     if (port == 5000) {
                         Router.setBrokerMsg(msg);
                         int price = 0;
