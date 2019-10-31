@@ -82,7 +82,7 @@ public class DbConn {
             // execute insert SQL statement
             stat.executeUpdate();
         } catch (SQLException e) {
-//            log("insertion sjfbsi: " + e.toString());
+            log("Update Error: " + e.toString());
         }
     }
 

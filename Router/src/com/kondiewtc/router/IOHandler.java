@@ -33,24 +33,28 @@ public class IOHandler {
             @Override
             public void completed(Integer result, ByteBuffer attachment) {
                 String msg = new String(attachment.array()).trim();
-                if (port == 5000) {
-                    Router.setBrokerMsg(msg);
-                    int price = 0;
-                    try {
-                        ResultSet rs = Main.conn.getItem(Integer.valueOf(msg.split(":")[0].split(" ")[1]));
-                        if (rs.next()) {
-                            price = rs.getInt("price");
-                            Logger.log("[Broker]: ID=" + id + "|MARKET: WTC" + "|INSTRUCTION=" + msg.split(":")[0].split(" ")[0] + "|PRICE=" + price + "|ITEM_ID=" + msg.split(":")[0].split(" ")[1] + "|QUANTITY=" + msg.split(":")[0].split(" ")[2] + "|CKSUM=" + msg.split(":")[1]);
+                if (msg.split(":").length == 2 && CheckSum.isIntact(msg.split(":")[0], Integer.valueOf(msg.split(":")[1]))) {
+                    if (port == 5000) {
+                        Router.setBrokerMsg(msg);
+                        int price = 0;
+                        try {
+                            ResultSet rs = Main.conn.getItem(Integer.valueOf(msg.split(":")[0].split(" ")[1]));
+                            if (rs.next()) {
+                                price = rs.getInt("price");
+                                Logger.log("[Broker]: ID=" + id + "|MARKET: WTC" + "|INSTRUCTION=" + msg.split(":")[0].split(" ")[0] + "|PRICE=" + price + "|ITEM_ID=" + msg.split(":")[0].split(" ")[1] + "|QUANTITY=" + msg.split(":")[0].split(" ")[2] + "|CKSUM=" + msg.split(":")[1]);
+                            } else {
+                                Logger.log("[Broker]: ID=" + id + "|MARKET: WTC" + "|INSTRUCTION=" + msg.split(":")[0].split(" ")[0] + "|PRICE=" + price + "|ITEM_ID=" + msg.split(":")[0].split(" ")[1] + "|QUANTITY=" + msg.split(":")[0].split(" ")[2] + "|CKSUM=" + msg.split(":")[1]);
+                            }
+                        } catch (Exception e) {
+                            Logger.log(e.toString());
                         }
-                        else{
-                            Logger.log("[Broker]: ID=" + id + "|MARKET: WTC" + "|INSTRUCTION=" + msg.split(":")[0].split(" ")[0] + "|PRICE=" + price + "|ITEM_ID=" + msg.split(":")[0].split(" ")[1] + "|QUANTITY=" + msg.split(":")[0].split(" ")[2] + "|CKSUM=" + msg.split(":")[1]);
-                        }
-                    }catch (Exception e){
-                        Logger.log(e.toString());
+                    } else {
+                        Router.setMarketMsg(msg);
+                        Logger.log("[Market]: ID=" + id + "|MARKET: WTC" + "|MSG=" + msg.split(":")[0] + "|CKSUM=" + msg.split(":")[1]);
                     }
-                }else{
-                    Router.setMarketMsg(msg);
-                    Logger.log("[Market]: ID=" + id + "|MARKET: WTC" + "|MSG=" + msg.split(":")[0] + "|CKSUM=" + msg.split(":")[1]);
+                }
+                else{
+                    Logger.log("This sent message was not intact");
                 }
             }
 
@@ -112,7 +116,7 @@ public class IOHandler {
                             handleOutput(Router.getBroker(), false);
                         }
                         else if (!isReady){
-                            Main.showItems(Main.conn);
+//                            Main.showItems(Main.conn);
                         }
                     }
 

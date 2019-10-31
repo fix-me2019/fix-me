@@ -59,6 +59,24 @@ public class DbConn {
         return rs;
     }
 
+    public void closeDB(){
+        if (rs != null) {
+            try {
+                rs.close();
+            } catch (SQLException e) {}
+        }
+        if (stat != null) {
+            try {
+                stat.close();
+            } catch (SQLException e) {}
+        }
+        if (conn != null) {
+            try {
+                conn.close();
+            } catch (SQLException e) {}
+        }
+    }
+
     public void addItem(String name, int quantity, int price, int id) {
 
         try {

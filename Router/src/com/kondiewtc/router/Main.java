@@ -25,6 +25,7 @@ public class Main {
         conn.clearAll();
         insertIntoDb(conn);
         showItems(conn);
+        conn.closeDB();
 
         //maybe i'll use it later
 //        ExecutorService thread = Executors.newCachedThreadPool();

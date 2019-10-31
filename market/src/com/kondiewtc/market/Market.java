@@ -78,16 +78,19 @@ public class Market {
             if (rs.next()) {
                 if (queryType.equalsIgnoreCase("buy") && (rs.getInt("quantity") - quantity) > 0) {
                     Main.conn.updateItem(rs.getInt("quantity") - quantity, id);
-                    return "Executed. Request accepted";
+                    Main.showItems(Main.conn);
+                    return "Executed. Buy request accepted";
                 } else if (queryType.equalsIgnoreCase("sell")) {
                     Main.conn.updateItem(rs.getInt("quantity") + quantity, id);
-                    return "Executed. Request accepted";
+                    Main.showItems(Main.conn);
+                    return "Executed. Sell request accepted";
                 } else {
+                    Main.showItems(Main.conn);
                     return "Rejected. Request denied";
                 }
             }
             else{
-                return "Rejected. Request denied, make use the selected id exists";
+                return "Rejected. Request denied, make sure the selected id exists";
             }
         }catch (Exception e){
             return "Rejected. Request denied because of some error";
