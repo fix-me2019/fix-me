@@ -112,8 +112,9 @@ public class IOHandler {
                 socket.write(ByteBuffer.wrap(str[0].getBytes()), str[0], new CompletionHandler<Integer, String>() {
                     @Override
                     public void completed(Integer result, String attachment) {
-                        if (port == 5001 && Router.getBroker() != null && isReady){
-                            handleOutput(Router.getBroker(), false);
+                        AsynchronousSocketChannel client = Router.getBroker();
+                        if (port == 5001 && client != null && isReady){
+                            handleOutput(client, false);
                         }
                         else if (!isReady){
 //                            Main.showItems(Main.conn);

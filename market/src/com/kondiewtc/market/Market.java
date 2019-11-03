@@ -27,7 +27,7 @@ public class Market {
                 @Override
                 public void completed(Integer result, ByteBuffer attachment) {
                     String query = new String(attachment.array()).trim();
-                    if (query.split("~").length >= 2) {
+                    if (query.split("~").length >= 2 && query.split("~")[1].split(":").length == 2 && CheckSum.isIntact(query.split("~")[1].split(":")[0], query.split("~")[1].split(":")[1])) {
                         Logger.log("Server: " + query.split("~")[0]);
                         Logger.log("Broker: " + query.split("~")[1].split(":")[0]);
 

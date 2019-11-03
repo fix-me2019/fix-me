@@ -31,6 +31,7 @@ public class CheckSum {
         }
         else
         {
+            Logger.log("The message is not intact");
             return false;
         }
     }

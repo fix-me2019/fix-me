@@ -60,14 +60,19 @@ public class Broker {
                     @Override
                     public void completed(Integer result, ByteBuffer attachment) {
                         String str = new String(attachment.array()).trim();
-                        if (Main.id == 0) {
-                            Main.id = Integer.valueOf(str.split(": ")[1]);
-                            Logger.log("Server: " + str);
-                            handleRead(socket);
+                        if (str.split(":").length == 2 && CheckSum.isIntact(str.split(":")[0], str.split(":")[1])) {
+                            if (Main.id == 0) {
+                                str = str.split(":")[0];
+                                Main.id = Integer.valueOf(str.split("= ")[1]);
+                                Logger.log("Server: " + str);
+                                handleRead(socket);
+                            } else {
+                                Main.id = 0;
+                                Logger.log("Market: " + str.split(":")[0]);
+                                System.exit(0);
+                            }
                         }else{
-                            Main.id = 0;
-                            Logger.log("Market: " + str.split(":")[0]);
-                            System.exit(0);
+                            Logger.log(str);
                         }
                     }
 

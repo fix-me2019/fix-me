@@ -25,12 +25,13 @@ public class CheckSum {
     static boolean isIntact(String s, String checksum)
     {
         String generated_checksum = generateChecksum(s);
-        if (generated_checksum == checksum)
+        if (generated_checksum.equals(checksum))
         {
             return true;
         }
         else
         {
+            Logger.log("The message is not intact");
             return false;
         }
     }

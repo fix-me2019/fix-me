@@ -19,7 +19,8 @@ public class CompHandler implements CompletionHandler<AsynchronousSocketChannel,
                 attachment.setId(id++);
                 if (attachment.getPost() == 5000){
                     Router.setBroker(client);
-                    str = "Connected to router. ID: " + attachment.getId();
+                    str = "Connected to router. ID= " + attachment.getId();
+                    str += ":" + CheckSum.generateChecksum(str);
                 }
                 else{
                     Router.setMarket(client);
