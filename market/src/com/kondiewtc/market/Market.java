@@ -27,7 +27,8 @@ public class Market {
                 @Override
                 public void completed(Integer result, ByteBuffer attachment) {
                     String query = new String(attachment.array()).trim();
-                    if (query.split("~").length >= 2 && query.split("~")[1].split(":").length == 2 && CheckSum.isIntact(query.split("~")[1].split(":")[0], query.split("~")[1].split(":")[1])) {
+//                    Logger.log(query);
+                    if (query.split("~").length >= 2 && query.split("~")[1].split(":").length == 3 && CheckSum.isIntact(query.split("~")[1].split(":")[1], query.split("~")[1].split(":")[2])) {
                         Logger.log("Server: " + query.split("~")[0]);
                         Logger.log("Broker: " + query.split("~")[1].split(":")[0]);
 
@@ -69,9 +70,10 @@ public class Market {
 
     private String getReply(String query){
 
-        int id = Integer.valueOf(query.split("~")[1].split(":")[0].split(" ")[1]);
-        int quantity = Integer.valueOf(query.split("~")[1].split(":")[0].split(" ")[2]);
-        String queryType = query.split("~")[1].split(":")[0].split(" ")[0];
+        String[] splitArr = query.split("~")[1].split(":")[1].split(" ");
+        int id = Integer.valueOf(splitArr[1]);
+        int quantity = Integer.valueOf(splitArr[2]);
+        String queryType = splitArr[0];
 
         try {
             ResultSet rs = Main.conn.getItem(id);

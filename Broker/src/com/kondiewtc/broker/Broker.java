@@ -60,6 +60,7 @@ public class Broker {
                     @Override
                     public void completed(Integer result, ByteBuffer attachment) {
                         String str = new String(attachment.array()).trim();
+//                        Logger.log(str);
                         if (str.split(":").length == 2 && CheckSum.isIntact(str.split(":")[0], str.split(":")[1])) {
                             if (Main.id == 0) {
                                 str = str.split(":")[0];

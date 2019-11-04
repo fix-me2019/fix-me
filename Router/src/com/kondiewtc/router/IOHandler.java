@@ -35,7 +35,7 @@ public class IOHandler {
                 String msg = new String(attachment.array()).trim();
                 if (msg.split(":").length == 2 && CheckSum.isIntact(msg.split(":")[0], String.valueOf(msg.split(":")[1]))) {
                     if (port == 5000) {
-                        Router.setBrokerMsg(msg);
+                        Router.setBrokerMsg(id + ":" + msg);
                         int price = 0;
                         try {
                             ResultSet rs = Main.conn.getItem(Integer.valueOf(msg.split(":")[0].split(" ")[1]));
@@ -50,7 +50,7 @@ public class IOHandler {
                         }
                     } else {
                         Router.setMarketMsg(msg);
-                        Logger.log("[Market]: ID=" + id + "|MARKET: WTC" + "|MSG=" + msg.split(":")[0] + "|CKSUM=" + msg.split(":")[1]);
+                        Logger.log("[Market]: ID=" + id + "|MARKET: WTC" + "|MSG=" + msg.split(":")[1] + "|CKSUM=" + msg.split(":")[1]);
                     }
                 }
                 else{
